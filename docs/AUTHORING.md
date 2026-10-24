@@ -24,6 +24,26 @@ Each subject lives in `data/<subject>/` as plain JavaScript files listed in `ind
   model: '<p>model answer</p>', pitfalls: ['common mistake', …] }
 ```
 
+```js
+// Numeric answer (maths): marked automatically. The student types e.g. 3/4, 2sqrt(3), 5pi/6, e^2, "x = 1 or x = -3".
+{ id, pool, type: 'num', marks, topic, kk, tech: 'free' | 'cas', stem, hint,
+  answer: 0.75 | [1, -3],          // several values: any order, unless ordered: true (coordinates, "max, min")
+  dp?: 2, tol?: 0.01,              // accept answers rounded to dp places, or within tol (default: almost exact)
+  show: '$\\frac34$',               // the answer as displayed in the feedback
+  solution: '<p>worked solution</p>',
+  wrong?: [{ v: 0.5, msg: 'why this common wrong answer is wrong' }],
+  prompt?: 'x =', unit?: 'cm', format?: 'placeholder hint', exact?: true }
+```
+
+### Maths subjects
+
+- Every maths question has `tech: 'free'` (Exam 1 style, no calculator) or `tech: 'cas'`. A paper with `tech` set must contain only that kind.
+- Write formulas in LaTeX between `$…$` (inline) or `$$…$$` (display); KaTeX typesets them. Wrap a literal dollar amount in `<span class="nomath">$20 000</span>`.
+- Write content in `String.raw` templates (`R\`…\``) so backslashes survive. **Never put `$` directly before `${…}`**: `${` starts a JavaScript interpolation and swallows the dollar sign. For vectors use the macro `\\tv{a}` (defined in `VCE.texMacros`) instead of interpolating.
+- Graphs: `VCE.plot({ x: [xmin, xmax], y: [ymin, ymax], fns: [{ f: (x) => … }], pts, lines, … })` returns an SVG string to drop into a stem, option or model answer (see `assets/plot.js`).
+- Multiple-choice answer positions use a per-subject salt (`mcSalt` in `registry.js`), chosen once for an even spread. Never change it after release.
+- The validator test-typesets every formula if the `katex` npm package is available (`KATEX=/path/to/node_modules/katex node tools/validate.js .`).
+
 Stimuli: `VCE.stimuli(subject, { id: { html, chart?, charts?, source? } })`. A chart is `{ type: 'bar' | 'line', title, xLabel, yLabel, categories, yMax, yStep, series: [{ name, values }] }`.
 
 ## Checks before publishing
@@ -35,7 +55,7 @@ Run `node tools/validate.js .` (it checks answer keys, rationales, stimulus refe
 1. **New questions only.** Use VCAA papers for format, command words, difficulty and marking style, never for the scenarios or wording.
 2. **Every question maps to a study design dot point** (`kk`). If you can't map it, it's out of scope.
 3. **Units 1 & 2 subjects:** VCAA exams are Units 3 & 4. Use them for style only and check content against `SCOPE-Units-1-2.txt` in the source library.
-4. **Maths:** verify every numerical answer computationally before publishing.
+4. **Maths:** verify every numerical answer computationally before publishing. Units 1–2 Methods excludes the chain/product rules, derivatives of exponential and circular functions, and definite integrals; Units 1–2 Methods circular functions are of the form $y=Af(nx)+c$ (no horizontal translation).
 
 ### Psychology scope guardrails (from the VCAA 2023–2027 FAQs)
 

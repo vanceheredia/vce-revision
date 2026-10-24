@@ -177,3 +177,31 @@ blockquote { margin: 8px 0; padding: 8px 12px; border-left: 3px solid var(--line
   .focus li { flex-direction: column; align-items: flex-start; }
   .kktbl th:nth-child(2), .kktbl td:nth-child(2) { display: none; }
 }
+/* maths */
+.chip.nocalc { background: var(--hint-bg); }
+.numrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0 2px; }
+.numans { font: inherit; font-family: ui-monospace, Menlo, Consolas, monospace; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text); width: 260px; max-width: 100%; }
+.numans:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.numprev { min-height: 1.2em; margin: 2px 0 8px; }
+.cb.paper { display: inline-flex; gap: 6px; align-items: center; margin: 6px 0; }
+.plot { margin: 10px 0; width: 100%; }
+.plot svg { width: 100%; height: auto; display: block; }
+.plot figcaption { font-size: 14px; color: var(--muted); text-align: center; }
+.plot .paxis { stroke: var(--text); stroke-width: 1.2; fill: none; }
+.plot .parrowhead { fill: var(--text); }
+.plot .pgrid { stroke: var(--line); stroke-width: 1; }
+.plot .ptick { fill: var(--muted); font-size: 11px; }
+.plot .plab { fill: var(--text); font-size: 13px; font-style: italic; }
+.plot .pcurve { fill: none; stroke-width: 2.2; stroke-linejoin: round; }
+.plot .pcurve.s0 { stroke: var(--c0); } .plot .pcurve.s1 { stroke: var(--c1); } .plot .pcurve.s2 { stroke: var(--c2); } .plot .pcurve.s3 { stroke: var(--c3); }
+.plot .dash { stroke-dasharray: 6 4; }
+.plot .pasym { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.plot .pfill { fill: var(--c0); fill-opacity: .18; stroke: var(--c0); stroke-width: 1.5; }
+.plot .pshape { fill: none; stroke: var(--c1); stroke-width: 2; }
+.plot .ppt { fill: var(--text); } .plot .ppt.open { fill: var(--surface); stroke: var(--text); stroke-width: 1.5; }
+.opt .plot { max-width: 220px; margin: 0; }
+.options.graphs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.katex-display { overflow-x: auto; overflow-y: hidden; padding: 2px 0; }
+.stem .katex, .opt .katex, .model .katex { font-size: 1.08em; }
+.pseudo { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; white-space: pre; overflow-x: auto; }
+.plot .pfill.nostroke { stroke: none; }

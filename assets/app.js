@@ -39,6 +39,10 @@
   const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const newId = (p) => p + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
+  // Multiple choice and numeric answers are marked by the app; everything else is self-marked against a guide.
+  const auto = (question) => question.type === 'mc' || question.type === 'num';
+  const typeRank = (question) => (question.type === 'mc' ? 0 : question.type === 'num' ? 1 : 2);
+
   function criteriaOf(question) {
     return (question.criteria || []).map((c) => (typeof c === 'string' ? { m: 1, t: c } : c));
   }
@@ -48,23 +52,26 @@
   function answerScore(question, ans) {
     if (!ans) return null;
     if (question.type === 'mc') return ans.choice == null ? null : (ans.choice === question.answer ? 1 : 0);
+    if (question.type === 'num') return hasText(ans) ? (VCE.checkNum(question, ans.text) ? 1 : 0) : null;
     if (!ans.scored) return null;
     return Math.min(ans.score, question.marks) / question.marks;
   }
 
   // Score as a fraction within a session: null = not yet marked. After an exam is submitted,
-  // anything left blank scores 0; written answers with text stay null until self-marked.
+  // anything left blank scores 0; written answers stay null until self-marked. Maths written answers are often
+  // done on paper, so ticking "answered on paper" counts as an attempt.
   const hasText = (ans) => !!(ans && (ans.text || '').trim());
+  const attempted = (ans) => hasText(ans) || !!(ans && ans.paper);
   function scoreIn(sess, question) {
     const ans = sess.answers[question.id];
     const sc = answerScore(question, ans);
     if (sc != null) return sc;
     if (!sess.submitted) return null;
-    return question.type !== 'mc' && hasText(ans) ? null : 0;
+    return !auto(question) && attempted(ans) ? null : 0;
   }
   function isPending(sess, question) {
     const ans = sess.answers[question.id];
-    return question.type !== 'mc' && hasText(ans) && !ans.scored && (sess.submitted || ans.checked);
+    return !auto(question) && attempted(ans) && !ans.scored && (sess.submitted || ans.checked);
   }
 
   function recordResult(qid, frac, conf) {
@@ -138,7 +145,7 @@
     for (const id of sess.qids) {
       const question = q(s, id); const ans = sess.answers[id];
       possible += question.marks;
-      if (ans && (ans.choice != null || hasText(ans))) answered++;
+      if (ans && (ans.choice != null || attempted(ans))) answered++;
       if (isPending(sess, question)) pending++;
       const sc = scoreIn(sess, question);
       if (sc != null) got += sc * question.marks;
@@ -219,7 +226,7 @@
       return `<table class="opt-table"><thead><tr><th></th>${question.header.map((h) => `<th>${h}</th>`).join('')}</tr></thead><tbody>${question.options.map((o, i) =>
         `<tr class="${cls(i)}"><td><label class="opt-l">${input(i)}<b>${LETTERS[i]}.</b></label></td>${o.map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
     }
-    return `<div class="options">${question.options.map((o, i) => `<label class="opt ${cls(i)}">${input(i)}<b>${LETTERS[i]}.</b><span>${o}</span></label>`).join('')}</div>`;
+    return `<div class="options${question.graphs ? ' graphs' : ''}">${question.options.map((o, i) => `<label class="opt ${cls(i)}">${input(i)}<b>${LETTERS[i]}.</b><span>${o}</span></label>`).join('')}</div>`;
   }
 
   function mcFeedback(s, question, ans) {
@@ -233,6 +240,21 @@
     return h + reviseLinks(s, question) + '</div>';
   }
 
+  function numFeedback(s, question, ans) {
+    const ok = hasText(ans) && VCE.checkNum(question, ans.text);
+    const read = hasText(ans) ? VCE.readNumbers(ans.text, question.ordered) : null;
+    let h = `<div class="fb ${ok ? 'fb-ok' : 'fb-bad'}"><h4>${ok ? '✓ Correct' : hasText(ans) ? '✗ Not quite' : 'Not answered'}</h4>`;
+    if (hasText(ans) && !read) h += `<p>I couldn't read “${esc(ans.text)}” as a number. Use forms like <code>3/4</code>, <code>-2.5</code>, <code>2sqrt(3)</code>, <code>5pi/6</code>, <code>e^2</code>, and separate several answers with commas.</p>`;
+    else if (!ok && read) {
+      const diag = (question.wrong || []).find((w) => VCE.checkNum(Object.assign({}, question, { answer: w.v }), ans.text));
+      h += `<p><strong>You entered ${esc(ans.text.trim())}.</strong> ${diag ? diag.msg : ''}</p>`;
+    }
+    h += `<p><strong>${ok ? 'Answer' : 'The correct answer is'}:</strong> ${question.show}</p>`;
+    if (ok && question.exact) h += `<p class="muted small">In an exam, give this in exact form as shown.</p>`;
+    if (question.solution) h += `<details ${ok ? '' : 'open'}><summary>Worked solution</summary><div class="model">${question.solution}</div></details>`;
+    return h + reviseLinks(s, question) + '</div>';
+  }
+
   function writtenFeedback(s, question, ans, editable) {
     const crit = criteriaOf(question);
     const marks = ans.marks || [];
@@ -243,7 +265,7 @@
     h += `<ul class="checklist">${crit.map((c, i) => `<li><label><input type="checkbox" data-act="selfmark" data-i="${i}" ${marks[i] ? 'checked' : ''} ${editable ? '' : 'disabled'}><span class="m">+${c.m}</span><span>${c.t}</span></label></li>`).join('')}</ul>`;
     h += `<p class="selfscore">Your mark: <strong>${Math.min(total, question.marks)} / ${question.marks}</strong>${ans.scored ? ' <span class="saved">saved</span>' : ''}</p>`;
     if (editable) h += `<button class="btn" data-act="savemark">${ans.scored ? 'Update my mark' : 'Save my mark'}</button>`;
-    if (question.model) h += `<details open><summary>Model answer</summary><div class="model">${question.model}</div></details>`;
+    if (question.model) h += `<details open><summary>${s.math ? 'Worked solution' : 'Model answer'}</summary><div class="model">${question.model}</div></details>`;
     if (question.pitfalls && question.pitfalls.length) h += `<details><summary>Common mistakes that lose marks</summary><ul>${question.pitfalls.map((p) => `<li>${p}</li>`).join('')}</ul></details>`;
     return h + reviseLinks(s, question) + '</div>';
   }
@@ -255,6 +277,12 @@
       <button class="btn small" data-act="flag">${f ? 'Update report' : 'Save report'}</button></details>`;
   }
 
+  function numPreview(question, text) {
+    if (!(text || '').trim()) return question.format || '';
+    const v = VCE.readNumbers(text, question.ordered);
+    return v ? `Read as: ${v.map((x) => +x.toPrecision(10)).join(', ')}` : 'Not readable yet: check brackets and symbols';
+  }
+
   function questionCard(s, sess, i) {
     const question = q(s, sess.qids[i]);
     const ans = sess.answers[question.id] || {};
@@ -264,11 +292,18 @@
     const reveal = (exam && sess.submitted) || (!exam && ans.checked);
     const t = topicOf(s, question.topic);
     let h = `<article class="qcard" data-qid="${question.id}">`;
-    h += `<header class="qhead"><span>${questionLabel(sess, i)}</span><span class="chip">${plural(question.marks, 'mark')}</span>${t ? `<span class="chip topic">${esc(t.title)}</span>` : ''}</header>`;
+    const tech = question.tech === 'free' ? '<span class="chip nocalc">No calculator</span>' : question.tech === 'cas' ? '<span class="chip">CAS allowed</span>' : '';
+    h += `<header class="qhead"><span>${questionLabel(sess, i)}</span><span class="chip">${plural(question.marks, 'mark')}</span>${tech}${t ? `<span class="chip topic">${esc(t.title)}</span>` : ''}</header>`;
     h += stimulusHtml(s, question);
     h += `<div class="stem">${question.stem}</div>`;
     if (question.type === 'mc') h += optionsHtml(question, ans, locked, reveal);
-    else {
+    else if (question.type === 'num') {
+      h += `<div class="numrow"><label>${question.prompt || 'Answer'}: <input class="numans" data-act="text" autocomplete="off" spellcheck="false" value="${esc(ans.text || '')}" ${locked ? 'disabled' : ''} placeholder="${reading ? 'Reading time' : 'e.g. 3/4, 2sqrt(3), 5pi/6'}"></label>${question.unit ? ` <span>${question.unit}</span>` : ''}</div>`;
+      h += `<p class="muted small numprev">${numPreview(question, ans.text)}</p>`;
+    } else if (s.math) {
+      h += `<textarea class="answer" data-act="text" rows="${Math.max(3, question.marks + 2)}" ${locked ? 'disabled' : ''} placeholder="${reading ? 'Reading time: you can read but not write yet' : 'Work it out on paper. You can type your final answer or key steps here (optional).'}">${esc(ans.text || '')}</textarea>`;
+      if (exam && !sess.submitted && !reading) h += `<label class="cb paper"><input type="checkbox" data-act="paper" ${ans.paper ? 'checked' : ''}> ✍️ I answered this on paper</label>`;
+    } else {
       const words = (ans.text || '').trim() ? ans.text.trim().split(/\s+/).length : 0;
       h += `<textarea class="answer" data-act="text" rows="${question.type === 'er' ? 14 : Math.max(4, question.marks * 2 + 1)}" ${locked ? 'disabled' : ''} placeholder="${reading ? 'Reading time: you can read but not write yet' : 'Write your answer here…'}">${esc(ans.text || '')}</textarea>`;
       h += `<p class="muted small wc">${words} words${question.type === 'er' ? ' · aim to address all four criteria in a structured response' : ''}</p>`;
@@ -278,18 +313,19 @@
         h += `<div class="controls">`;
         if (question.hint) h += ans.hint ? `<div class="hint">💡 ${question.hint}</div>` : `<button class="btn ghost" data-act="hint">💡 Show hint</button>`;
         h += `<div class="conf"><span class="muted small">How sure are you?</span>${['sure', 'unsure', 'guess'].map((c) => `<button class="pill ${ans.conf === c ? 'on' : ''}" data-act="conf" data-v="${c}">${{ sure: 'Sure', unsure: 'Unsure', guess: 'Guessing' }[c]}</button>`).join('')}</div>`;
-        h += `<div class="actions"><button class="btn primary" data-act="check">${question.type === 'mc' ? 'Check answer' : 'Show marking guide'}</button>`;
-        if (ans.choice != null || hasText(ans)) h += `<button class="btn ghost small" data-act="clearq">↺ Clear answer</button>`;
+        h += `<div class="actions"><button class="btn primary" data-act="check">${auto(question) ? 'Check answer' : 'Show marking guide'}</button>`;
+        if (ans.choice != null || attempted(ans)) h += `<button class="btn ghost small" data-act="clearq">↺ Clear answer</button>`;
         h += `</div></div>`;
       } else {
         if (ans.hint && question.hint) h += `<div class="hint used">💡 Hint used: ${question.hint}</div>`;
-        h += question.type === 'mc' ? mcFeedback(s, question, ans) : writtenFeedback(s, question, ans, true);
+        h += question.type === 'mc' ? mcFeedback(s, question, ans) : question.type === 'num' ? numFeedback(s, question, ans) : writtenFeedback(s, question, ans, true);
         h += `<button class="btn ghost small" data-act="clearq">↺ Reset this question</button>`;
       }
     } else if (!sess.submitted) {
-      if (!reading && (ans.choice != null || hasText(ans))) h += `<div class="actions"><button class="btn ghost small" data-act="clearq">↺ Clear answer</button></div>`;
+      if (!reading && (ans.choice != null || attempted(ans))) h += `<div class="actions"><button class="btn ghost small" data-act="clearq">↺ Clear answer</button></div>`;
     } else if (sess.submitted) {
-      h += question.type === 'mc' ? (ans.choice == null ? `<div class="fb fb-bad"><h4>Not answered</h4><p>The correct answer is ${LETTERS[question.answer]}: ${question.why[question.answer]}</p>${reviseLinks(s, question)}</div>` : mcFeedback(s, question, ans)) : writtenFeedback(s, question, ans, true);
+      h += question.type === 'mc' ? (ans.choice == null ? `<div class="fb fb-bad"><h4>Not answered</h4><p>The correct answer is ${LETTERS[question.answer]}: ${question.why[question.answer]}</p>${reviseLinks(s, question)}</div>` : mcFeedback(s, question, ans))
+        : question.type === 'num' ? numFeedback(s, question, ans) : writtenFeedback(s, question, ans, true);
     }
     h += flagHtml(question);
     return h + '</article>';
@@ -299,7 +335,7 @@
     return `<nav class="qnav" aria-label="Questions">${sess.qids.map((id, i) => {
       const question = q(s, id); const ans = sess.answers[id]; const reveal = sess.submitted || (ans && ans.checked);
       let c = '';
-      if (ans && (ans.choice != null || (ans.text || '').trim())) c = 'answered';
+      if (ans && (ans.choice != null || attempted(ans))) c = 'answered';
       if (reveal) { const sc = scoreIn(sess, question); c = sc == null ? (isPending(sess, question) ? 'pending' : c) : sc >= 1 ? 'right' : sc > 0 ? 'part' : 'wrong'; }
       const lab = question.label || (sess.sections ? (i - (sess.sections.find((x) => i >= x.start && i < x.start + x.count) || { start: 0 }).start + 1) : i + 1);
       const sec = sess.sections && sess.sections.find((x) => x.start === i);
@@ -313,7 +349,7 @@
     const list = Object.values(VCE.subjects).sort((a, b) => a.order - b.order);
     return `<section class="hero"><h1>VCE Revision</h1><p>Pick a subject. Your progress is saved in this browser. Use <a href="#/data">Backup &amp; settings</a> to keep a copy.</p></section>
       <div class="grid">${list.map((s) => s.ready
-        ? `<a class="card subj" href="#/s/${s.id}"><h2>${esc(s.name)}</h2><p>${esc(s.units)}</p><p class="muted small">${Object.keys(s.questions).length} questions · ${plural(s.papers.filter((p) => p.kind !== 'test').length, 'full exam')} · ${plural(s.papers.filter((p) => p.kind === 'test').length, 'unit test')}</p></a>`
+        ? `<a class="card subj" href="#/s/${s.id}"><h2>${esc(s.name)}</h2><p>${esc(s.units)}</p><p class="muted small">${Object.keys(s.questions).length} questions · ${plural(s.papers.filter((p) => p.kind !== 'test').length, s.math ? 'exam paper' : 'full exam')} · ${plural(s.papers.filter((p) => p.kind === 'test').length, 'unit test')}</p></a>`
         : `<div class="card subj off"><h2>${esc(s.name)}</h2><p>${esc(s.units)}</p><p class="muted small">Coming soon</p></div>`).join('')}</div>`;
   }
 
@@ -368,6 +404,7 @@
   function viewTopic(s, t, focusKk) {
     let h = `<p class="crumbs"><a href="#/">Home</a> › <a href="#/s/${s.id}">${esc(s.name)}</a> › <a href="#/s/${s.id}/topics">Notes</a></p>`;
     h += `<h1>${esc(t.title)}</h1><p class="muted">${esc(t.group || '')}</p><div class="actions"><button class="btn primary" data-act="starttopic" data-topic="${t.id}">Practise this topic</button></div>`;
+    if (t.book) h += `<p class="muted small">📘 ${t.book}</p>`;
     for (const k of t.kk || []) {
       h += `<section class="kk ${k.id === focusKk ? 'focus' : ''}" id="kk-${k.id}"><h2>${esc(k.short)}</h2>${k.text ? `<blockquote><span class="muted small">Study design key knowledge</span><br>${esc(k.text)}</blockquote>` : ''}<div class="note">${k.note || ''}</div></section>`;
     }
@@ -381,6 +418,7 @@
       <form class="custom" data-form="custom">
       <fieldset><legend>Topics</legend><p><button type="button" class="link" data-act="alltopics">Select all</button></p>${s.topics.map((t) => `<label class="cb"><input type="checkbox" name="topic" value="${t.id}"> ${esc(t.title)} <span class="muted small">(${pool.filter((x) => x.topic === t.id).length})</span></label>`).join('')}</fieldset>
       <fieldset><legend>Question types</legend>${[['mixed', 'Mixed'], ['mc', 'Multiple choice only'], ['written', 'Short answer only']].map(([v, l], i) => `<label class="cb"><input type="radio" name="type" value="${v}" ${i ? '' : 'checked'}> ${l}</label>`).join('')}</fieldset>
+      ${s.math ? `<fieldset><legend>Calculator</legend>${[['any', 'Either'], ['free', 'No calculator (Exam 1 style)'], ['cas', 'CAS allowed (Exam 2 style)']].map(([v, l], i) => `<label class="cb"><input type="radio" name="tech" value="${v}" ${i ? '' : 'checked'}> ${l}</label>`).join('')}</fieldset>` : ''}
       <fieldset><legend>How many</legend>${[10, 20, 30].map((n, i) => `<label class="cb"><input type="radio" name="count" value="${n}" ${i ? '' : 'checked'}> ${n}</label>`).join('')}</fieldset>
       <fieldset><legend>Priority</legend><label class="cb"><input type="checkbox" name="weak" checked> Prefer questions I haven't tried or got wrong</label></fieldset>
       <button class="btn primary" type="submit">Start quiz</button> <span class="muted small" data-msg></span></form>`;
@@ -437,7 +475,7 @@
       b.possible += question.marks; if (isPending(sess, question)) b.pending += 1; if (sc != null) b.got += sc * question.marks;
     }
     const wrong = sess.qids.filter((id) => { const sc = scoreIn(sess, q(s, id)); return sc != null && sc < 1; });
-    const unmarked = sess.qids.filter((id) => isPending(sess, q(s, id)) || (sess.submitted && q(s, id).type !== 'mc' && hasText(sess.answers[id]) && !sess.answers[id].scored));
+    const unmarked = sess.qids.filter((id) => isPending(sess, q(s, id)) || (sess.submitted && !auto(q(s, id)) && attempted(sess.answers[id]) && !sess.answers[id].scored));
     let h = `<p class="crumbs"><a href="#/">Home</a> › <a href="#/s/${s.id}">${esc(s.name)}</a> › <a href="#/session/${sess.id}">${esc(sess.title)}</a></p><h1>Results</h1>`;
     h += `<div class="scorebox"><div class="big">${sm.got}<span>/${sm.possible}</span></div><div>${pct(sm.got / sm.possible)}% of marks${sm.pending ? `<br><span class="warn">${sm.pending} written answer${sm.pending === 1 ? '' : 's'} not self-marked yet, so this total is provisional</span>` : ''}</div></div>`;
     if (sess.sections) {
@@ -573,11 +611,19 @@
       session: () => viewSession(r.sess), results: () => viewResults(r.sess), data: () => viewData(),
     }[r.name]();
     app.innerHTML = html;
+    typeset(r.s || (r.sess && subj(r.sess.subject)));
     document.title = (r.s ? r.s.name + ' · ' : r.sess ? r.sess.title + ' · ' : '') + 'VCE Revision';
     if (keepScroll) window.scrollTo(0, y);
     else if (r.name === 'topic' && r.kk) { const el = document.getElementById('kk-' + r.kk); if (el) el.scrollIntoView(); }
     else window.scrollTo(0, 0);
     syncTimer();
+  }
+
+  // Maths subjects write formulas as $...$ (inline) or $$...$$ (display), typeset by KaTeX when it has loaded.
+  function typeset(s) {
+    if (!s || !s.math || !window.renderMathInElement) return;
+    // Wrap a literal dollar amount in <span class="nomath"> so it isn't read as maths.
+    window.renderMathInElement(app, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }], ignoredClasses: ['nomath'], macros: VCE.texMacros, throwOnError: false });
   }
 
   function go(hash) { if (location.hash === hash) render(); else location.hash = hash; }
@@ -621,7 +667,7 @@
   function startTopic(s, tid) {
     const t = topicOf(s, tid);
     const ids = Object.values(s.questions).filter((x) => x.topic === tid && x.pool === 'practice');
-    ids.sort((a, b) => (a.type === 'mc' ? 0 : 1) - (b.type === 'mc' ? 0 : 1));
+    ids.sort((a, b) => typeRank(a) - typeRank(b));
     const sess = createSession({ subject: s.id, kind: 'topic', refId: tid, title: `Topic practice: ${t.title}`, mode: 'practice', qids: ids.map((x) => x.id) });
     go('#/session/' + sess.id);
   }
@@ -642,6 +688,7 @@
     let pool = Object.values(s.questions).filter((x) => x.pool === 'practice' && opts.topics.includes(x.topic));
     if (opts.type === 'mc') pool = pool.filter((x) => x.type === 'mc');
     if (opts.type === 'written') pool = pool.filter((x) => x.type !== 'mc');
+    if (opts.tech && opts.tech !== 'any') pool = pool.filter((x) => x.tech === opts.tech);
     pool = shuffle(pool);
     if (opts.weak) {
       const rank = (x) => { const st = Store.state.qstats[x.id]; return !st ? 0 : st.last < 1 ? 1 : 2; };
@@ -692,8 +739,10 @@
     if (act === 'conf') { ans.conf = el.dataset.v; touch(sess); return render(true); }
     if (act === 'check') {
       if (question.type === 'mc' && ans.choice == null) { el.textContent = 'Choose an option first'; return; }
+      if (question.type === 'num' && !hasText(ans)) { el.textContent = 'Type an answer first'; return; }
       ans.checked = true;
-      if (question.type === 'mc') recordResult(question.id, ans.choice === question.answer ? 1 : 0, ans.conf);
+      if (!auto(question) && !hasText(ans)) ans.paper = true;
+      if (auto(question)) recordResult(question.id, answerScore(question, ans), ans.conf);
       touch(sess); return render(true);
     }
     if (act === 'clearq') { sess.answers[question.id] = {}; touch(sess); return render(true); }
@@ -728,7 +777,7 @@
     if (act === 'submit-yes') {
       sess.submitted = true; sess.submittedAt = Date.now(); sess.timer.phase = 'done';
       // Only answered questions feed the review queue; blanks (e.g. ran out of time) still score 0 in the results.
-      for (const id of sess.qids) { const qq = q(s, id); const a = sess.answers[id]; if (qq.type === 'mc' && a && a.choice != null) recordResult(id, a.choice === qq.answer ? 1 : 0, null); }
+      for (const id of sess.qids) { const qq = q(s, id); const sc = auto(qq) ? answerScore(qq, sess.answers[id]) : null; if (sc != null) recordResult(id, sc, null); }
       touch(sess); return go('#/results/' + sess.id);
     }
     if (act === 'retrywrong') {
@@ -752,6 +801,7 @@
     if (!current.sess) return;
     const { sess, question, ans } = currentQuestion();
     if (el.dataset.act === 'choose') { ans.choice = +el.value; touch(sess); render(true); }
+    if (el.dataset.act === 'paper') { ans.paper = el.checked; touch(sess); render(true); }
     if (el.dataset.act === 'selfmark') {
       const crit = criteriaOf(question);
       ans.marks = ans.marks || crit.map(() => false);
@@ -766,11 +816,18 @@
   app.addEventListener('input', (e) => {
     const el = e.target;
     if (el.dataset.act !== 'text' || !current.sess) return;
-    const { sess, ans } = currentQuestion();
+    const { sess, question, ans } = currentQuestion();
     ans.text = el.value;
+    if (question.type === 'num') { const p = el.closest('.qcard').querySelector('.numprev'); if (p) p.textContent = numPreview(question, el.value); }
     const wc = el.parentElement.querySelector('.wc');
     if (wc) wc.textContent = wc.textContent.replace(/^\d+ words/, `${el.value.trim() ? el.value.trim().split(/\s+/).length : 0} words`);
     clearTimeout(typing); typing = setTimeout(() => touch(sess), 400);
+  });
+
+  // Enter in a numeric answer box checks it (practice mode).
+  app.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || !e.target.classList.contains('numans')) return;
+    const btn = app.querySelector('[data-act=check]'); if (btn) { e.preventDefault(); btn.click(); }
   });
 
   app.addEventListener('submit', (e) => {
@@ -778,7 +835,7 @@
     if (form.dataset.form !== 'custom') return;
     e.preventDefault();
     const fd = new FormData(form);
-    const opts = { topics: fd.getAll('topic'), type: fd.get('type'), count: +fd.get('count'), weak: !!fd.get('weak') };
+    const opts = { topics: fd.getAll('topic'), type: fd.get('type'), tech: fd.get('tech'), count: +fd.get('count'), weak: !!fd.get('weak') };
     const msg = form.querySelector('[data-msg]');
     if (!opts.topics.length) { msg.textContent = 'Pick at least one topic.'; return; }
     const ids = pickQuestions(current.s, opts);
