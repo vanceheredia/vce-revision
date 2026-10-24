@@ -101,7 +101,7 @@
       stem: R`<p>The business breaks even when $P(x)=0$. Find the values of $x$ in the domain at which it breaks even, correct to two decimal places.</p>`,
       hint: 'Solve on the CAS with 0 ≤ x ≤ 10. One solution of the cubic is outside the domain.', show: R`$x\approx3.35$ and $x\approx9.59$`,
       wrong: [{ v: [-0.9348, 3.3472, 9.5876], msg: R`$x\approx-0.93$ is outside the domain $0\le x\le10$.` }],
-      solution: R`<p>solve$(P(x)=0)$ gives $x\approx-0.93,\ 3.35,\ 9.59$; only $3.35$ and $9.59$ are in the domain.</p>` },
+      solution: R`<p>Solving $P(x)=0$ (with CAS) gives $x\approx-0.93,\ 3.35,\ 9.59$; only $3.35$ and $9.59$ are in the domain.</p>` },
     { id: 'mu1-b1c', pool: 'unit1', label: '9c', type: 'num', tech: 'cas', marks: 2, topic: 'poly', kk: ['po-graph'], stimulus: 'mu1-profit', answer: [7.06, 75.03], ordered: true, tol: 0.02, prompt: '(x, P)',
       stem: R`<p>Use your calculator's graph to find the coordinates of the point of maximum profit, correct to two decimal places.</p>`,
       hint: 'Graph P on [0, 10] and use the maximum tool.', show: R`$(7.06,\ 75.03)$`,

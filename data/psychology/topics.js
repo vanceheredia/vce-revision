@@ -385,10 +385,10 @@ VCE.subject('psychology', {
           id: 'sk-error', short: 'Errors, uncertainty and outliers',
           text: 'identify outliers and contradictory or incomplete data; evaluate investigation methods and possible sources of error or uncertainty, and suggest improvements to increase validity and to reduce uncertainty',
           note: `<ul><li><strong>Random errors</strong>: unpredictable variations that cause a spread of results, reducing <em>precision</em> (e.g. participants tested at different times of day, small variations in procedure). Reduce them with more repetitions or a larger sample, and by refining the method.</li>
-<li><strong>Systematic errors</strong>: shift all readings in the same direction by a consistent amount, reducing <em>accuracy</em> (e.g. a miscalibrated instrument, a stopwatch always started late). Repeating doesn't help; fix the instrument or method.</li>
+<li><strong>Systematic errors</strong>: bias readings in one direction (above or below the true value), often but not always by a consistent amount, reducing <em>accuracy</em> (e.g. a miscalibrated instrument, a flawed method, participants expecting a probiotic to work and reporting less anxiety). Repeating doesn't help; fix the instrument or method.</li>
 <li><strong>Personal errors</strong> (mistakes, miscalculations) are not included in analysis; the measurement should be redone.</li>
 <li><strong>Uncertainty</strong>: the lack of exact knowledge of the true value. All measurements have it, and psychological constructs increase it. It is treated qualitatively only. Uncertainty is not the same as error.</li>
-<li><strong>Outliers</strong>: values far from the rest. Don't automatically delete them: investigate the cause (recording error, chance, a different group) and consider their effect on the mean and on validity.</li>
+<li><strong>Outliers</strong>: data points that don't fit the pattern. VCAA's guidance: don't ignore them or assume they are mistakes. Include all data, outliers too, in the analysis, consider what might explain them, and note their effect on the mean. More observations reduce the influence of outliers caused by random factors.</li>
 <li><strong>Contradictory data</strong> conflicts with other data (e.g. an impossible response); <strong>incomplete data</strong> is missing values.</li></ul>
 <p class="muted small">You don't need to name specific errors such as "placebo effect" or "order effect"; classify them as random or systematic, or as an extraneous/confounding variable.</p>`,
         },
@@ -445,5 +445,26 @@ VCE.subject('psychology', {
 <ul><li>Read the stem twice and underline the key word (e.g. "most likely", "behavioural", "after conditioning").</li>
 <li>Eliminate options that are true statements but don't answer the question.</li>
 <li>With two-column options, check <em>both</em> columns; usually one half is a trap.</li>
-<li>Never leave a question blank, since there's no penalty for guessing.</li></ul>`,
+<li>Never leave a question blank, since there's no penalty for guessing.</li></ul>
+<h2>What the VCAA examiners' reports say (2023–2025)</h2>
+<p>These come from the official reports on how real students answered. Each is a pattern that cost many students marks. The <a href="#/s/psychology">"Where students lose marks" test</a> drills them.</p>
+<ul>
+<li><strong>Give only the number of answers asked for.</strong> If a question asks for one example and you give two, only the first is marked.</li>
+<li><strong>Link to the scenario.</strong> A correct but generic answer is often capped (e.g. 4 out of 5) or gets no marks. Name the person, the task, the data.</li>
+<li><strong>"Compare" or "distinguish" needs congruent differences:</strong> compare the <em>same feature</em> for both (e.g. range of effect for neurotransmitters <em>and</em> neuromodulators).</li>
+<li><strong>Physiological responses need a direction:</strong> "heart rate increases", not "heart rate".</li>
+<li><strong>Populations must include every characteristic</strong> needed to measure the variables (e.g. people with Alzheimer's disease <em>who take antibiotics</em>). In 2025 only 7% got this right.</li>
+<li><strong>Benefits of a design must be explained for that study</strong>, not just described ("there are two groups" earns nothing).</li>
+<li><strong>Hypotheses</strong> need the population, both levels of the IV, the DV and a direction, written as a prediction.</li>
+<li><strong>Precision is shown by the standard deviation</strong> (smallest SD = most precise), not the mean.</li>
+<li><strong>Conclusions vs implications:</strong> a conclusion is about this study's results; an implication is what they might mean beyond it.</li>
+<li><strong>Conclusions need a direction</strong>, using comparison words such as higher, lower, increased and decreased, ideally with data.</li>
+<li><strong>Correlation is not causation.</strong> A correlational study shows a relationship only.</li>
+<li><strong>Acute and chronic stress are types of stress, not stressors.</strong> Resilience is the ability to cope with and manage change and uncertainty.</li>
+<li><strong>Light and sleep:</strong> light is detected by the SCN, which signals the pineal gland to delay melatonin release. The SCN does not release melatonin.</li>
+<li><strong>Sleep hygiene advice depends on when the person sleeps</strong> (e.g. night-shift workers), not on clock time.</li>
+<li><strong>Phobias:</strong> catastrophic thinking looks forward (the worst will happen) and perpetuates the phobia; memory bias looks back. Stigma works through shame, which leads to avoiding help, which maintains the phobia.</li>
+<li><strong>Command terms matter:</strong> "summarise" means a concise account of the main steps; "evaluate" needs strengths <em>and</em> limitations and a judgement; "justify" needs a reason.</li>
+<li><strong>10-mark question:</strong> quote or describe the stimulus explicitly, use because-statements, give at least one similarity and one difference when comparing, and always attempt every part. Strong responses often use subheadings. The 2025 state average was 4.8 out of 10.</li>
+</ul>`,
 });

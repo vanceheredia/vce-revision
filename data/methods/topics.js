@@ -31,6 +31,26 @@
 <li>Forgetting $+c$ in an anti-derivative, or not using the boundary condition to find $c$.</li>
 <li>Rounding early in Exam 2 and drifting away from the correct answer.</li>
 </ul>
+<h2>How VCAA marks maths</h2>
+<ul>
+<li>Marks are <strong>M</strong> (method: a correct key step, e.g. "sets the derivative to 0 and attempts to solve") or <strong>A</strong> (answer: the correct final result). The marking guides in this app follow the same idea: each tick is a step an assessor looks for.</li>
+<li>"In questions where more than one mark is available, appropriate working must be shown." A bare answer to a 2- or 3-mark question earns at most the A mark, often nothing.</li>
+<li>Equivalent correct forms are accepted, but <strong>contradictory answers can't get full marks</strong>: cross out the attempts you don't want marked.</li>
+<li>If asked for one answer and you give more, only the first is marked. There are no half marks. A later part can still earn marks if it follows correctly from your earlier wrong answer (a consequential error).</li>
+</ul>
+<h2>What the VCAA examiners' reports say (2023–2025)</h2>
+<ul>
+<li><strong>Exact answers</strong> unless a number of decimal places is asked for, and round only at the end (set your CAS float correctly).</li>
+<li><strong>Answer in the form asked:</strong> an "equation" needs a full equation ($y=2x-8$), not just values; "coordinates" need both values in round brackets $(3,-11)$; equations of asymptotes are written as separate equations.</li>
+<li><strong>Use the function names in the question.</strong> If it defines $f$, write $f'(x)$, not $y'$ or $\frac{dy}{dx}$ of something else. Logarithms: $\log_e(x)$ with the base as a subscript.</li>
+<li><strong>Brackets matter:</strong> intervals in the correct order with the correct bracket types (square = included); strictly increasing/decreasing intervals use square brackets at stationary points; close every bracket; vinculums (fraction bars) and radical signs must cover everything they apply to.</li>
+<li><strong>Graphs:</strong> use the grid; show asymptotic behaviour (approaching, never touching); keep symmetry (truncus, cosine); label intercepts, stationary points and endpoints with coordinates; respect the domain (closed or open endpoints); draw dashed asymptotes dark enough to see.</li>
+<li><strong>Derivative graphs</strong> must match the original: zeros of $f'$ at the turning points of $f$, and extreme values of $f'$ where $f$ is steepest.</li>
+<li><strong>"Show that", "verify", "hence":</strong> "show that" needs logical steps ending in the given result; "verify" means substitute and check; "hence" means use the previous part.</li>
+<li><strong>Transformations:</strong> use the study design's wording, e.g. "dilation by a factor of 2 from the $x$-axis" (or "parallel to the $y$-axis"), "reflection in the $y$-axis", "translation 3 units in the positive direction of the $x$-axis".</li>
+<li><strong>CAS syntax is not working.</strong> Write the equation or expression you solved in normal mathematical notation; calculator commands such as “solve(…)” don't count.</li>
+<li><strong>Read the question again when finished.</strong> Common slips: giving the $x$-value when the point was asked for; finding the gradient when the tangent equation was asked for; average <em>value</em> instead of average <em>rate of change</em>.</li>
+</ul>
 <h2>Multiple choice (Exam 2)</h2>
 <ul>
 <li>About 1.5 minutes per question. Use the CAS to check options: substitute values, graph the options, or test a point.</li>
@@ -306,7 +326,7 @@ $$x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$$</li>
 <li>Tangent repeats every $\pi$: $\tan x=\sqrt3$ on $[0,2\pi]$ gives $x=\frac{\pi}{3},\frac{4\pi}{3}$.</li>
 <li>$\sin x=\cos x$ is the same as $\tan x=1$ (divide by $\cos x$).</li>
 <li>Count the solutions you expect: $\sin(nx)=k$ (with $|k|\lt 1$) has 2 solutions per period. Larger $n$ → more periods in the domain → more solutions.</li>
-<li>With the CAS: <em>solve</em> with the domain restriction, e.g. <code>solve(2sin(2x)+1=0, x) | 0≤x≤2π</code>, and check the number of solutions against a graph.</li>
+<li>With the CAS: solve with the domain restriction, and check the number of solutions against a graph. In your written answer, write the equation in normal notation (“solving $2\sin(2x)+1=0$ for $x\in[0,2\pi]$”). VCAA does not accept calculator syntax as working.</li>
 <li>Exponential versions: $3\times2^x-1=11\Rightarrow2^x=4\Rightarrow x=2$, or with logs if needed (see the exponential topic).</li></ul>`,
           },
         ],
@@ -327,7 +347,7 @@ $$x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$$</li>
 <li>different base: $5^x=12\Rightarrow x=\log_5 12=\frac{\log_{10}12}{\log_{10}5}\approx1.544$;</li>
 <li>quadratic in disguise: $4^x-6\times2^x+8=0$; let $u=2^x$: $u^2-6u+8=0$, so $u=2$ or $4$, and $x=1$ or $2$ (reject any $u\le0$, since $2^x>0$).</li></ul></li>
 <li>Log equations: combine into a single log first, then convert. $\log_2 x+\log_2(x-2)=3\Rightarrow x(x-2)=8\Rightarrow x=4$ (reject $x=-2$: you can't take the log of a negative).</li>
-<li>Euler's number $e\approx2.718$ is a base like any other; $\log_e x$ is also written $\ln x$.</li></ul>`,
+<li>Euler's number $e\approx2.718$ is a base like any other. VCAA writes $\log_e(x)$, with the base as a subscript; calculators label it “ln”. Use $\log_e$ in written answers.</li></ul>`,
           },
           {
             id: 'ex-graph', short: 'Exponential and logarithmic graphs',
@@ -365,7 +385,7 @@ $\frac{(x+h)^2-3(x+h)-(x^2-3x)}{h}=\frac{2xh+h^2-3h}{h}=2x+h-3\to2x-3$.</li>
 <li>Show every step in a first-principles question: the expansion, the cancelling, and the limit with "$\lim_{h\to0}$" written until the last line.</li>
 <li><strong>Central difference</strong>: $f'(x)\approx\frac{f(x+h)-f(x-h)}{2h}$ is the gradient of the secant through points $h$ either side of $x$. It is usually more accurate than the forward difference for the same $h$; for a quadratic it is exact.<br>Example: $f(x)=x^3$, $x=2$, $h=0.1$: $\frac{2.1^3-1.9^3}{0.2}=\frac{9.261-6.859}{0.2}=12.01$ (the true value is 12).</li>
 <li>Limits: $\lim_{x\to a}f(x)$ is the value $f(x)$ approaches. For $\frac{x^2-9}{x-3}$, factorise to get $x+3$, so the limit as $x\to3$ is 6, even though $f(3)$ is undefined.</li>
-<li>A function is not differentiable at a sharp corner (e.g. $y=|x|$ at 0), at a break (discontinuity), or where the tangent is vertical.</li></ul>`,
+<li>A function is not differentiable at a sharp corner (e.g. where two pieces of a hybrid function meet at an angle), at a break (discontinuity), or where the tangent is vertical.</li></ul>`,
           },
           {
             id: 'df-rule', short: 'Differentiating polynomials by rule',

@@ -93,7 +93,7 @@ VCE.questions('psychology', [
     ],
   },
   {
-    id: 'e1-a05', pool: 'exam1', type: 'mc', marks: 1, topic: 'ns', kk: ['ns-nt'], stimulus: 'e1-drug',
+    id: 'e1-a05', pool: 'practice', type: 'mc', marks: 1, topic: 'ns', kk: ['ns-nt'], stimulus: 'e1-drug',
     stem: '<p>When Drug K binds to the receptor sites on a post-synaptic neuron, the most likely effect is that the post-synaptic neuron</p>',
     options: ['becomes more likely to fire.', 'becomes less likely to fire.', 'releases more glutamate.', 'becomes more responsive to dopamine across a widespread brain region.'],
     answer: 1,
@@ -106,7 +106,7 @@ VCE.questions('psychology', [
     ],
   },
   {
-    id: 'e1-a06', pool: 'exam1', type: 'mc', marks: 1, topic: 'ns', kk: ['ns-nt'], stimulus: 'e1-drug',
+    id: 'e1-a06', pool: 'practice', type: 'mc', marks: 1, topic: 'ns', kk: ['ns-nt'], stimulus: 'e1-drug',
     stem: '<p>Drug K can only bind to GABA receptor sites, and not to glutamate receptor sites, because</p>',
     options: ['GABA receptor sites are located only in the spinal cord.', 'its shape is complementary to the shape of GABA receptor sites.', 'it is a neuromodulator rather than a neurotransmitter.', 'glutamate receptor sites are located on axon terminals rather than dendrites.'],
     answer: 1,
@@ -119,7 +119,7 @@ VCE.questions('psychology', [
     ],
   },
   {
-    id: 'e1-a07', pool: 'exam1', type: 'mc', marks: 1, topic: 'ns', kk: ['ns-nt'],
+    id: 'e1-a07', pool: 'practice', type: 'mc', marks: 1, topic: 'ns', kk: ['ns-nt'],
     stem: '<p>Which of the following correctly compares glutamate with dopamine?</p>',
     header: ['Glutamate', 'Dopamine'],
     options: [['neuromodulator with widespread effects', 'excitatory neurotransmitter acting at a single synapse'], ['inhibitory neurotransmitter', 'neuromodulator involved in sleep only'], ['excitatory neurotransmitter', 'neuromodulator involved in reward-based learning'], ['excitatory neurotransmitter', 'inhibitory neurotransmitter that calms neural activity']],
@@ -186,7 +186,7 @@ VCE.questions('psychology', [
     ],
   },
   {
-    id: 'e1-a12', pool: 'exam1', type: 'mc', marks: 1, topic: 'stress', kk: ['st-tmsc'],
+    id: 'e1-a12', pool: 'practice', type: 'mc', marks: 1, topic: 'stress', kk: ['st-tmsc'],
     stem: '<p>Before her final exam, Amira thinks: "This is my chance to show how much I\'ve improved." According to Lazarus and Folkman\'s Transactional Model of Stress and Coping, this is</p>',
     options: ['a secondary appraisal of a threat.', 'a primary appraisal of the exam as benign-positive.', 'a primary appraisal of the exam as a challenge.', 'a secondary appraisal of her coping resources.'],
     answer: 2,
@@ -199,7 +199,7 @@ VCE.questions('psychology', [
     ],
   },
   {
-    id: 'e1-a13', pool: 'exam1', type: 'mc', marks: 1, topic: 'stress', kk: ['st-tmsc'],
+    id: 'e1-a13', pool: 'practice', type: 'mc', marks: 1, topic: 'stress', kk: ['st-tmsc'],
     stem: '<p>Which of the following is the best example of a secondary appraisal?</p>',
     options: ['"This driving test doesn\'t matter to me at all."', '"My brother is a driving instructor and can take me for practice drives."', '"If I fail, I\'ll lose the job I was offered."', '"Passing would be a great opportunity to get more independence."'],
     answer: 1,
@@ -212,7 +212,7 @@ VCE.questions('psychology', [
     ],
   },
   {
-    id: 'e1-a14', pool: 'exam1', type: 'mc', marks: 1, topic: 'stress', kk: ['st-coping'],
+    id: 'e1-a14', pool: 'practice', type: 'mc', marks: 1, topic: 'stress', kk: ['st-coping'],
     stem: '<p>Jack usually manages stress by making a detailed plan. When his grandmother became seriously ill, he realised planning wasn\'t helping and began spending time with friends and going for long runs instead. This best demonstrates</p>',
     options: ['coping flexibility.', 'an avoidance strategy that lacks context-specific effectiveness.', 'a primary appraisal.', 'the resistance stage of the General Adaptation Syndrome.'],
     answer: 0,
@@ -225,7 +225,7 @@ VCE.questions('psychology', [
     ],
   },
   {
-    id: 'e1-a15', pool: 'exam1', type: 'mc', marks: 1, topic: 'stress', kk: ['st-coping'],
+    id: 'e1-a15', pool: 'practice', type: 'mc', marks: 1, topic: 'stress', kk: ['st-coping'],
     stem: '<p>Which of the following is an approach strategy for coping with an upcoming job interview?</p>',
     options: ['playing video games to stop thinking about it', 'telling yourself it isn\'t really happening', 'researching the company and practising answers with a friend', 'cancelling the interview'],
     answer: 2,
@@ -846,6 +846,12 @@ VCE.questions('psychology', [
     id: 'e1-b8', pool: 'exam1', label: '8', type: 'er', marks: 10, topic: 'stress', kk: ['st-gba', 'st-resp', 'sk-conclude', 'sk-data'], stimulus: 'e1-er',
     stem: '<p>Evaluate the claim that "eating probiotic yoghurt every day cures exam stress".</p><p>In your response, refer to:</p><ul><li>the gut–brain axis and the role of cortisol in stress</li><li>the data and methodology of the study</li><li>the extent to which the evidence supports the claim.</li></ul>',
     hint: 'Plan for 2 minutes: what does the cortisol data show, what does the self-report data show, what\'s wrong with "proves" and "cures", and what does the gut–brain axis predict?',
+    rubric: [
+      ["Uses ‘gut–brain axis’ or ‘cortisol’ loosely or incorrectly, or only repeats the terms in the stimulus.", "Correctly uses the terms given (gut–brain axis, cortisol, stress) in the context of the study.", "Correctly uses and explains the given terms plus others (e.g. vagus nerve, gut microbiota, chronic stress, control group, sample size).", "Precise, functional use of a wide range of terms (e.g. bidirectional communication, enteric nervous system, objective measure, external validity, conflict of interest) throughout, applied to this study."],
+      ["Describes the gut–brain axis or cortisol separately, with no link to the probiotic.", "Describes how a probiotic could affect the gut–brain axis OR how cortisol relates to stress.", "Links probiotic → gut microbiota → gut–brain communication → stress response and cortisol.", "Fully explains the proposed mechanism and connects it explicitly to what the cortisol and self-report results do and don’t show."],
+      ["States a result, e.g. ‘probiotics lowered stress’, without quoting the data.", "Quotes the cortisol trend OR identifies one strength or limitation of the method.", "Quotes the cortisol and self-report data and gives at least one strength and one limitation (e.g. small sample, industry funding).", "Evaluates the data in depth (both groups rose; overlapping SDs on self-report) and weighs at least two limitations against strengths, in terms of how far the evidence supports the claim."],
+      ["Agrees or disagrees with the claim without justification.", "Gives a judgement with a simple reason.", "Gives a justified judgement and challenges ‘proves’/‘cures’.", "Constructs an evidence-based argument for a nuanced conclusion (limited support for reducing the physiological stress response, no support for ‘cures’) and suggests what further research would be needed."],
+    ],
     criteria: [
       { m: 1, t: '<strong>Terminology:</strong> correctly explains the gut–brain axis as a bidirectional communication network (vagus nerve, enteric nervous system) and that gut microbiota can produce neurochemicals (e.g. GABA, serotonin)' },
       { m: 1, t: '<strong>Terminology:</strong> explains cortisol as the hormone associated with chronic stress and why it was a suitable physiological measure' },
@@ -872,13 +878,59 @@ VCE.questions('psychology', [
   },
 ]);
 
+VCE.questions('psychology', [
+  { id: "e1-a41", pool: "exam1", type: "mc", marks: 1, topic: "memory", kk: ["me-brain"],
+    stem: "<p>Years after being stung by a bee, Rafael feels a sudden jolt of fear whenever he hears buzzing. Which brain region is most involved in encoding the emotional component of this memory?</p>",
+    options: ["The amygdala", "The hippocampus", "The cerebellum", "The basal ganglia"],
+    answer: 0,
+    why: ["The amygdala encodes the emotional (fear) component of memories and links it to the cue.", "The hippocampus consolidates explicit memories (e.g. the facts of the event), not the fear response itself.", "The cerebellum is involved in implicit procedural memories, such as motor skills.", "The basal ganglia are involved in implicit procedural memories and habits."],
+    hint: "Which structure is associated with fear and emotional memory?", },
+  { id: "e1-a42", pool: "exam1", type: "mc", marks: 1, topic: "memory", kk: ["me-epi"],
+    stem: "<p>When Priya imagines her first day at university next year, she is most likely drawing on</p>",
+    options: ["both her episodic and semantic memories", "only her episodic memories", "only her semantic memories", "her implicit procedural memories"],
+    answer: 0,
+    why: ["Constructing a possible imagined future combines details of personal past experiences (episodic) with general knowledge (semantic).", "Episodic memory alone lacks the general knowledge (e.g. what a university campus is like) needed to build the scene.", "Semantic memory alone lacks the personal, contextual detail used to imagine the event.", "Imagining a future event draws on explicit memories, not motor skills or habits."],
+    hint: "Imagining the future reuses two kinds of explicit memory.", },
+  { id: "e1-a43", pool: "exam1", type: "mc", marks: 1, topic: "sleep", kk: ["sl-reg"],
+    stem: "<p>Which statement about the suprachiasmatic nucleus (SCN) is correct?</p>",
+    options: ["It receives information about daylight and uses it to reset the circadian rhythm about every 24 hours.", "It is located in the pineal gland and releases melatonin directly.", "It regulates the ultradian cycle of REM and NREM sleep stages.", "It is part of the peripheral nervous system."],
+    answer: 0,
+    why: ["Daylight is the main zeitgeber: light information reaches the SCN, which keeps the circadian rhythm aligned with the 24-hour day.", "The SCN is in the hypothalamus. It signals the pineal gland, which releases melatonin.", "The SCN regulates circadian rhythms, not the ultradian REM/NREM cycle.", "The SCN is a brain structure, so it is part of the central nervous system."],
+    hint: "Where is the SCN, and which rhythm does it regulate?", },
+  { id: "e1-a44", pool: "exam1", type: "mc", marks: 1, topic: "sleepwb", kk: ["sw-hyg", "sw-crsd"],
+    stem: "<p>Mele is a nurse on permanent night shift. She sleeps from 9 am to 4 pm. Which sleep hygiene advice would be <strong>least</strong> useful for her?</p>",
+    options: ["Avoid caffeine after 6 pm.", "Use blackout curtains in the bedroom.", "Avoid a large meal just before going to bed at 9 am.", "Keep the bedroom cool while sleeping."],
+    answer: 0,
+    why: ["Advice should be based on when she sleeps, not clock time. For Mele, 6 pm is the start of her waking day, so avoiding caffeine then does not protect her sleep.", "Blocking daylight helps her sleep during the day.", "Digestion close to bedtime can disrupt sleep, whatever the clock time.", "A cool room supports sleep onset at any time of day."],
+    hint: "Think about when Mele’s “evening” actually is.", },
+  { id: "e1-a45", pool: "exam1", type: "mc", marks: 1, topic: "sleep", kk: ["sl-life"],
+    stem: "<p>Across the life span, the proportion of total sleep spent in REM sleep is highest in</p>",
+    options: ["newborns", "adolescents", "adults", "elderly people"],
+    answer: 0,
+    why: ["About 50% of a newborn’s sleep is REM sleep, the highest proportion of any age group.", "Adolescents spend about 20–25% of sleep in REM.", "Adults spend about 20–25% of sleep in REM.", "The proportion of REM is lowest (or similar to adults) in old age."],
+    hint: "Which age group sleeps the most and has the most REM?", },
+  { id: "e1-a46", pool: "exam1", type: "mc", marks: 1, topic: "skills", kk: ["sk-data", "sk-error"],
+    stem: "<p>Three groups completed a reaction-time task.</p><table><tr><th>Group</th><th>Mean (ms)</th><th>Standard deviation (ms)</th></tr><tr><td>A</td><td>312</td><td>48</td></tr><tr><td>B</td><td>287</td><td>11</td></tr><tr><td>C</td><td>265</td><td>35</td></tr></table><p>Which group’s results were the most precise?</p>",
+    options: ["Group B, because it had the smallest standard deviation", "Group C, because it had the lowest mean", "Group A, because it had the highest mean", "Group A, because it had the largest standard deviation"],
+    answer: 0,
+    why: ["Precision is how closely repeated measurements agree. The smallest standard deviation shows the least spread.", "The mean tells you about the typical result, not how closely the measurements agree.", "A higher mean says nothing about precision.", "A larger standard deviation means more spread, so less precision."],
+    hint: "Precision is about spread, not the average.", },
+  { id: "e1-a47", pool: "exam1", type: "mc", marks: 1, topic: "skills", kk: ["sk-conclude"],
+    stem: "<p>A study found that students who wrote in a gratitude journal for four weeks reported lower stress than students who did not. Which statement is an <strong>implication</strong> of this finding rather than a conclusion?</p>",
+    options: ["Schools could consider including gratitude journalling in wellbeing programs.", "Students who journalled reported lower stress than those who did not.", "Gratitude journalling reduced self-reported stress in this sample.", "The results supported the hypothesis."],
+    answer: 0,
+    why: ["An implication is a possible consequence or application of the findings beyond the study itself.", "This is a conclusion: a statement about the results of this study.", "This is a conclusion about this sample.", "This is a statement about whether the hypothesis was supported, which is part of the conclusion."],
+    hint: "Conclusions describe what this study found; implications describe what the findings might mean beyond it.", },
+]);
+
 VCE.papers('psychology', [{
   id: 'exam1',
   title: 'Practice Exam 1',
   description: 'Full-length paper in the VCAA format: 40 multiple-choice questions plus 80 marks of short and extended answers (120 marks). Timed mode: 15 min reading + 2 h 30 min writing.',
   reading: 15, writing: 150,
   sections: [
-    { title: 'Section A – Multiple-choice questions', qids: Array.from({ length: 40 }, (_, i) => `e1-a${String(i + 1).padStart(2, '0')}`) },
+    { title: 'Section A – Multiple-choice questions', // Calibration (VCAA ~24 marks per area of study): seven Unit 3 AoS 1 items moved to the practice pool and replaced.
+      qids: Array.from({ length: 40 }, (_, i) => `e1-a${String(i + 1).padStart(2, '0')}`).map((id) => ({ 'e1-a05': 'e1-a41', 'e1-a06': 'e1-a42', 'e1-a07': 'e1-a43', 'e1-a12': 'e1-a44', 'e1-a13': 'e1-a45', 'e1-a14': 'e1-a46', 'e1-a15': 'e1-a47' }[id] || id)) },
     { title: 'Section B – Short-answer and extended-response questions', qids: ['e1-b1a', 'e1-b1b', 'e1-b1c', 'e1-b2a', 'e1-b2b', 'e1-b2c', 'e1-b3a', 'e1-b3b', 'e1-b3c', 'e1-b3d', 'e1-b3e', 'e1-b4a', 'e1-b4b', 'e1-b4c', 'e1-b4d', 'e1-b5a', 'e1-b5b', 'e1-b5c', 'e1-b5d', 'e1-b6a', 'e1-b6b', 'e1-b6c', 'e1-b6d', 'e1-b6e', 'e1-b7a', 'e1-b7b', 'e1-b7c', 'e1-b7d', 'e1-b8'] },
   ],
 }]);

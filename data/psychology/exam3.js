@@ -366,6 +366,12 @@ VCE.questions('psychology', [
   { id: 'e3-b8', pool: 'exam3', label: '8', type: 'er', marks: 10, topic: 'learning', kk: ['le-obs', 'ns-plast', 'sk-data'], stimulus: 'e3-er',
     stem: '<p>Evaluate Harper\'s friend\'s claim that "at our age the brain can\'t learn new tricks". In your response, refer to observational learning, synaptic plasticity and Harper\'s data.</p>',
     hint: 'Observational learning stages applied to Harper; LTP/LTD and sprouting/pruning; the trend in her data; limits of one person\'s self-recorded data; a judgement.',
+    rubric: [
+      ["Uses everyday language (e.g. ‘copying’, ‘brain gets better’) with few correct terms.", "Correctly uses some terms (observational learning, practice, synapse) for Harper.", "Correctly uses and explains the stages of observational learning and synaptic plasticity (LTP, LTD).", "Precise use throughout (attention, retention, reproduction, motivation, reinforcement, vicarious reinforcement, sprouting, pruning, mental representation) applied to Harper."],
+      ["Describes observational learning or plasticity in general terms only.", "Applies some stages of observational learning OR plasticity to Harper.", "Applies all stages to Harper and links practice to LTP/LTD.", "Connects the stages and plasticity into one explanation (repeated reproduction → LTP and sprouting; inefficient movements → LTD and pruning) of her improvement."],
+      ["Mentions that Harper improved, without data.", "Quotes data (e.g. 6 → 30 chord changes per minute).", "Describes the trend and links it to synaptic change from practice.", "Evaluates the evidence: one person, self-recorded, no comparison with younger learners, so limited generalisability."],
+      ["Agrees or disagrees with the friend without reasons.", "Gives a judgement with a simple reason.", "Gives a justified judgement that the claim is not supported.", "A nuanced, evidence-based conclusion (plasticity continues throughout life, though perhaps more slowly) and what stronger evidence would look like."],
+    ],
     criteria: [
       { m: 1, t: '<strong>Attention:</strong> Harper watches each lesson several times, focusing on the teacher' },
       { m: 1, t: '<strong>Retention:</strong> she stores mental representations of the chord shapes and changes' },

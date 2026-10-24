@@ -51,7 +51,7 @@ for (const s of Object.values(ctx.VCE.subjects)) {
     if (!q.hint) e('no hint');
     if (!q.pool) e('no pool');
     if (s.math) {
-      if (q.tech !== 'free' && q.tech !== 'cas') e('maths question needs tech: free | cas');
+      if (s.calc ? q.tech !== s.calc : q.tech !== 'free' && q.tech !== 'cas') e(`maths question needs tech: ${s.calc || 'free | cas'}`);
       walkMath(q.id, q);
     }
     if (q.type === 'mc') {
@@ -61,19 +61,23 @@ for (const s of Object.values(ctx.VCE.subjects)) {
       if (q.header && q.options.some((o) => !Array.isArray(o) || o.length !== q.header.length)) e('table options mismatch');
       if (q.marks !== 1) e('mc marks != 1');
       if (new Set(q.options.map(String)).size !== q.options.length) e('duplicate options');
+      if (s.steps && !q.working) e('needs a step-by-step working (data/<subject>/working.js)');
     } else if (q.type === 'num') {
       const want = [].concat(q.answer);
       if (!want.length || want.some((v) => typeof v !== 'number' || !isFinite(v))) e('num answer not finite numbers');
       if (!q.show) e('num needs show');
       if (!q.solution) e('num needs solution');
+      if (s.steps && !/<ol|<li|\\begin/.test(q.solution)) e('solution is not set out in steps');
       // The displayed answer must itself be accepted, and each diagnosed wrong value must be marked wrong.
       const typed = want.map((v) => String(+v.toPrecision(12))).join(', ');
       if (!ctx.VCE.checkNum(q, typed)) e(`num: own answer "${typed}" not accepted`);
       for (const w of q.wrong || []) if (ctx.VCE.checkNum(q, [].concat(w.v).join(', '))) e(`num: wrong value ${w.v} is accepted as correct`);
     } else {
+      if (q.rubric && (q.rubric.length !== 4 || q.rubric.some((l) => !Array.isArray(l) || l.length !== 4 || l.some((t) => !t)))) e('rubric must be 4 criteria x 4 levels');
       const sum = (q.criteria || []).reduce((a, c) => a + (typeof c === 'string' ? 1 : c.m), 0);
       if (sum !== q.marks) e(`criteria sum ${sum} != marks ${q.marks}`);
       if (!q.model) e('no model');
+      else if (s.steps && !/<ol|<li|\\begin|<table|<svg|\$\{/.test(q.model)) e('worked solution is not set out in steps');
     }
   }
   for (const p of s.papers) {

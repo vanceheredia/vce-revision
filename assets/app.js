@@ -232,10 +232,11 @@
   function mcFeedback(s, question, ans) {
     const ok = ans.choice === question.answer;
     const why = question.why || [];
-    let h = `<div class="fb ${ok ? 'fb-ok' : 'fb-bad'}"><h4>${ok ? '✓ Correct' : '✗ Not quite'}</h4>`;
+    let h = `<div class="fb ${ok ? 'fb-ok' : ans.revealed && ans.choice == null ? 'fb-info' : 'fb-bad'}"><h4>${ok ? '✓ Correct' : ans.choice != null ? '✗ Not quite' : ans.revealed ? '🧮 Here’s how to solve it' : 'Not answered'}</h4>`;
     if (!ok && ans.choice != null) h += `<p><strong>You chose ${LETTERS[ans.choice]}.</strong> ${why[ans.choice] || ''}</p>`;
     h += `<p><strong>${ok ? 'Why' : 'The correct answer is'} ${LETTERS[question.answer]}${ok ? ' is correct' : ''}:</strong> ${why[question.answer] || ''}</p>`;
     const others = question.options.map((_, i) => i).filter((i) => i !== question.answer && i !== ans.choice && why[i]);
+    if (question.working) h += `<details ${ok ? '' : 'open'}><summary>Worked solution, step by step</summary><div class="model">${question.working}</div></details>`;
     if (others.length) h += `<details><summary>Why the other options are wrong</summary>${others.map((i) => `<p><strong>${LETTERS[i]}.</strong> ${why[i]}</p>`).join('')}</details>`;
     return h + reviseLinks(s, question) + '</div>';
   }
@@ -243,7 +244,7 @@
   function numFeedback(s, question, ans) {
     const ok = hasText(ans) && VCE.checkNum(question, ans.text);
     const read = hasText(ans) ? VCE.readNumbers(ans.text, question.ordered) : null;
-    let h = `<div class="fb ${ok ? 'fb-ok' : 'fb-bad'}"><h4>${ok ? '✓ Correct' : hasText(ans) ? '✗ Not quite' : 'Not answered'}</h4>`;
+    let h = `<div class="fb ${ok ? 'fb-ok' : ans.revealed && !hasText(ans) ? 'fb-info' : 'fb-bad'}"><h4>${ok ? '✓ Correct' : hasText(ans) ? '✗ Not quite' : ans.revealed ? '🧮 Here’s how to solve it' : 'Not answered'}</h4>`;
     if (hasText(ans) && !read) h += `<p>I couldn't read “${esc(ans.text)}” as a number. Use forms like <code>3/4</code>, <code>-2.5</code>, <code>2sqrt(3)</code>, <code>5pi/6</code>, <code>e^2</code>, and separate several answers with commas.</p>`;
     else if (!ok && read) {
       const diag = (question.wrong || []).find((w) => VCE.checkNum(Object.assign({}, question, { answer: w.v }), ans.text));
@@ -251,21 +252,47 @@
     }
     h += `<p><strong>${ok ? 'Answer' : 'The correct answer is'}:</strong> ${question.show}</p>`;
     if (ok && question.exact) h += `<p class="muted small">In an exam, give this in exact form as shown.</p>`;
-    if (question.solution) h += `<details ${ok ? '' : 'open'}><summary>Worked solution</summary><div class="model">${question.solution}</div></details>`;
+    if (question.solution) h += `<details ${ok ? '' : 'open'}><summary>Worked solution, step by step</summary><div class="model">${question.solution}</div></details>`;
+    return h + reviseLinks(s, question) + '</div>';
+  }
+
+  // Extended responses with a rubric are marked holistically, like VCAA: a level per criterion.
+  // Each criterion is worth up to 2.5 of the 10 marks; levels Low/Medium/High/Very high give 0.5/1.25/2/2.5.
+  const RUBRIC_LEVELS = ['Not shown', 'Low', 'Medium', 'High', 'Very high'];
+  const RUBRIC_POINTS = [0, 0.5, 1.25, 2, 2.5];
+  const rubricScore = (question, levels) => Math.min(question.marks, Math.round((levels || []).reduce((a, l) => a + (RUBRIC_POINTS[l] || 0), 0)));
+
+  function rubricFeedback(s, question, ans, editable) {
+    const lv = ans.levels || [];
+    let h = `<div class="fb fb-guide"><h4>Marking guide · ${plural(question.marks, 'mark')} · marked holistically</h4>`;
+    h += `<p class="muted">VCAA marks this question as a whole against four criteria. For each criterion, pick the level that best matches what you actually wrote, not what you meant.</p>`;
+    question.rubric.forEach((levels, i) => {
+      h += `<fieldset class="rubric"><legend>${i + 1}. ${s.erCriteria ? s.erCriteria[i] : ''}</legend>`;
+      h += [0, 1, 2, 3, 4].map((l) => `<label class="rlevel ${lv[i] === l ? 'on' : ''}"><input type="radio" name="rub-${question.id}-${i}" data-act="rubric" data-i="${i}" data-l="${l}" ${lv[i] === l ? 'checked' : ''} ${editable ? '' : 'disabled'}><strong>${RUBRIC_LEVELS[l]}</strong>${l ? `<span>${levels[l - 1]}</span>` : ''}</label>`).join('');
+      h += `</fieldset>`;
+    });
+    h += `<p class="selfscore">Your mark: <strong>${lv.filter((x) => x != null).length ? rubricScore(question, lv) : 0} / ${question.marks}</strong>${ans.scored ? ' <span class="saved">saved</span>' : ''}</p>`;
+    if (editable) h += `<button class="btn" data-act="savemark">${ans.scored ? 'Update my mark' : 'Save my mark'}</button>`;
+    h += `<p class="muted small">Approximate: VCAA assessors judge the response as a whole. In 2025 the state average for this question was 4.8 / 10.</p>`;
+    const crit = criteriaOf(question);
+    if (crit.length) h += `<details><summary>What a very high response would include</summary><ul>${crit.map((c) => `<li>${c.t}</li>`).join('')}</ul></details>`;
+    if (question.model) h += `<details><summary>Model answer</summary><div class="model">${question.model}</div></details>`;
+    if (question.pitfalls && question.pitfalls.length) h += `<details><summary>Common mistakes that lose marks</summary><ul>${question.pitfalls.map((p) => `<li>${p}</li>`).join('')}</ul></details>`;
     return h + reviseLinks(s, question) + '</div>';
   }
 
   function writtenFeedback(s, question, ans, editable) {
+    if (question.rubric) return rubricFeedback(s, question, ans, editable);
     const crit = criteriaOf(question);
     const marks = ans.marks || [];
     const total = crit.reduce((a, c, i) => a + (marks[i] ? c.m : 0), 0);
     let h = `<div class="fb fb-guide"><h4>Marking guide · ${plural(question.marks, 'mark')}</h4>`;
-    h += `<p class="muted">Tick each point your answer clearly covers. Be strict, as an examiner would: it has to be in what you wrote, not just in your head.</p>`;
+    h += `<p class="muted">Tick each point your answer clearly covers. Be strict, as an examiner would: it has to be in what you wrote, not just in your head.${s.math ? ' VCAA awards method marks for correct key steps and an answer mark for the final result; equivalent forms are fine.' : ''}</p>`;
     if (question.type === 'er' && s.erCriteria) h += `<details><summary>VCAA criteria for the extended response</summary><ol>${s.erCriteria.map((c) => `<li>${c}</li>`).join('')}</ol></details>`;
     h += `<ul class="checklist">${crit.map((c, i) => `<li><label><input type="checkbox" data-act="selfmark" data-i="${i}" ${marks[i] ? 'checked' : ''} ${editable ? '' : 'disabled'}><span class="m">+${c.m}</span><span>${c.t}</span></label></li>`).join('')}</ul>`;
     h += `<p class="selfscore">Your mark: <strong>${Math.min(total, question.marks)} / ${question.marks}</strong>${ans.scored ? ' <span class="saved">saved</span>' : ''}</p>`;
     if (editable) h += `<button class="btn" data-act="savemark">${ans.scored ? 'Update my mark' : 'Save my mark'}</button>`;
-    if (question.model) h += `<details open><summary>${s.math ? 'Worked solution' : 'Model answer'}</summary><div class="model">${question.model}</div></details>`;
+    if (question.model) h += `<details open><summary>${s.math ? 'Worked solution, step by step' : 'Model answer'}</summary><div class="model">${question.model}</div></details>`;
     if (question.pitfalls && question.pitfalls.length) h += `<details><summary>Common mistakes that lose marks</summary><ul>${question.pitfalls.map((p) => `<li>${p}</li>`).join('')}</ul></details>`;
     return h + reviseLinks(s, question) + '</div>';
   }
@@ -292,7 +319,7 @@
     const reveal = (exam && sess.submitted) || (!exam && ans.checked);
     const t = topicOf(s, question.topic);
     let h = `<article class="qcard" data-qid="${question.id}">`;
-    const tech = question.tech === 'free' ? '<span class="chip nocalc">No calculator</span>' : question.tech === 'cas' ? '<span class="chip">CAS allowed</span>' : '';
+    const tech = question.tech === 'free' ? '<span class="chip nocalc">No calculator</span>' : question.tech === 'cas' ? '<span class="chip">CAS allowed</span>' : question.tech === 'sci' ? '<span class="chip">Scientific calculator</span>' : '';
     h += `<header class="qhead"><span>${questionLabel(sess, i)}</span><span class="chip">${plural(question.marks, 'mark')}</span>${tech}${t ? `<span class="chip topic">${esc(t.title)}</span>` : ''}</header>`;
     h += stimulusHtml(s, question);
     h += `<div class="stem">${question.stem}</div>`;
@@ -314,6 +341,7 @@
         if (question.hint) h += ans.hint ? `<div class="hint">💡 ${question.hint}</div>` : `<button class="btn ghost" data-act="hint">💡 Show hint</button>`;
         h += `<div class="conf"><span class="muted small">How sure are you?</span>${['sure', 'unsure', 'guess'].map((c) => `<button class="pill ${ans.conf === c ? 'on' : ''}" data-act="conf" data-v="${c}">${{ sure: 'Sure', unsure: 'Unsure', guess: 'Guessing' }[c]}</button>`).join('')}</div>`;
         h += `<div class="actions"><button class="btn primary" data-act="check">${auto(question) ? 'Check answer' : 'Show marking guide'}</button>`;
+        if (auto(question) && !(ans.choice != null || hasText(ans))) h += `<button class="btn" data-act="reveal">🧮 Show me how to solve it</button>`;
         if (ans.choice != null || attempted(ans)) h += `<button class="btn ghost small" data-act="clearq">↺ Clear answer</button>`;
         h += `</div></div>`;
       } else {
@@ -324,7 +352,7 @@
     } else if (!sess.submitted) {
       if (!reading && (ans.choice != null || attempted(ans))) h += `<div class="actions"><button class="btn ghost small" data-act="clearq">↺ Clear answer</button></div>`;
     } else if (sess.submitted) {
-      h += question.type === 'mc' ? (ans.choice == null ? `<div class="fb fb-bad"><h4>Not answered</h4><p>The correct answer is ${LETTERS[question.answer]}: ${question.why[question.answer]}</p>${reviseLinks(s, question)}</div>` : mcFeedback(s, question, ans))
+      h += question.type === 'mc' ? mcFeedback(s, question, ans)
         : question.type === 'num' ? numFeedback(s, question, ans) : writtenFeedback(s, question, ans, true);
     }
     h += flagHtml(question);
@@ -349,7 +377,7 @@
     const list = Object.values(VCE.subjects).sort((a, b) => a.order - b.order);
     return `<section class="hero"><h1>VCE Revision</h1><p>Pick a subject. Your progress is saved in this browser. Use <a href="#/data">Backup &amp; settings</a> to keep a copy.</p></section>
       <div class="grid">${list.map((s) => s.ready
-        ? `<a class="card subj" href="#/s/${s.id}"><h2>${esc(s.name)}</h2><p>${esc(s.units)}</p><p class="muted small">${Object.keys(s.questions).length} questions · ${plural(s.papers.filter((p) => p.kind !== 'test').length, s.math ? 'exam paper' : 'full exam')} · ${plural(s.papers.filter((p) => p.kind === 'test').length, 'unit test')}</p></a>`
+        ? `<a class="card subj" href="#/s/${s.id}"><h2>${esc(s.name)}</h2><p>${esc(s.units)}</p><p class="muted small">${Object.keys(s.questions).length} questions · ${plural(s.papers.filter((p) => !p.kind).length, s.math ? 'exam paper' : 'full exam')} · ${plural(s.papers.filter((p) => p.kind).length, s.math ? 'test' : 'unit test')}</p></a>`
         : `<div class="card subj off"><h2>${esc(s.name)}</h2><p>${esc(s.units)}</p><p class="muted small">Coming soon</p></div>`).join('')}</div>`;
   }
 
@@ -371,9 +399,10 @@
       if (done.length) c += `<p class="small">Past attempts: ${done.slice(0, 3).map((x) => { const sm = sessionSummary(s, x); return `<a href="#/results/${x.id}">${pct(sm.got / sm.possible)}%${sm.pending ? '*' : ''} (${fmtDate(x.submittedAt || x.updatedAt)})</a>`; }).join(' · ')}</p>`;
       return c + `</div>`;
     };
-    const exams = s.papers.filter((p) => p.kind !== 'test'), tests = s.papers.filter((p) => p.kind === 'test');
+    const exams = s.papers.filter((p) => !p.kind), tests = s.papers.filter((p) => p.kind === 'test'), options = s.papers.filter((p) => p.kind === 'option');
     h += `<h2>Full exams</h2><p class="muted">Practice mode gives hints and checks each answer. Exam mode is timed like the real VCAA exam, with no hints, and is marked at the end. Use ↺ Reset inside a test to start it again.</p><div class="grid">${exams.map(paperCard).join('')}</div>`;
-    if (tests.length) h += `<h2>Unit tests</h2><p class="muted">Shorter papers (about 50 minutes) on one unit, which suit a weeknight.</p><div class="grid">${tests.map(paperCard).join('')}</div>`;
+    if (tests.length) h += `<h2>${s.testsTitle || 'Unit tests'}</h2><p class="muted">${s.testsNote || 'Shorter papers (about 50 minutes) on one unit, which suit a weeknight.'}</p><div class="grid">${tests.map(paperCard).join('')}</div>`;
+    if (options.length) h += `<h2>${s.optionsTitle || 'Options'}</h2><p class="muted">${s.optionsNote || ''}</p><details class="optlist"><summary>Show all ${options.length} option tests</summary><div class="grid">${options.map(paperCard).join('')}</div></details>`;
 
     h += `<h2>Practise by topic</h2><div class="topics">`;
     let lastGroup = '';
@@ -418,7 +447,7 @@
       <form class="custom" data-form="custom">
       <fieldset><legend>Topics</legend><p><button type="button" class="link" data-act="alltopics">Select all</button></p>${s.topics.map((t) => `<label class="cb"><input type="checkbox" name="topic" value="${t.id}"> ${esc(t.title)} <span class="muted small">(${pool.filter((x) => x.topic === t.id).length})</span></label>`).join('')}</fieldset>
       <fieldset><legend>Question types</legend>${[['mixed', 'Mixed'], ['mc', 'Multiple choice only'], ['written', 'Short answer only']].map(([v, l], i) => `<label class="cb"><input type="radio" name="type" value="${v}" ${i ? '' : 'checked'}> ${l}</label>`).join('')}</fieldset>
-      ${s.math ? `<fieldset><legend>Calculator</legend>${[['any', 'Either'], ['free', 'No calculator (Exam 1 style)'], ['cas', 'CAS allowed (Exam 2 style)']].map(([v, l], i) => `<label class="cb"><input type="radio" name="tech" value="${v}" ${i ? '' : 'checked'}> ${l}</label>`).join('')}</fieldset>` : ''}
+      ${s.math && !s.calc ? `<fieldset><legend>Calculator</legend>${[['any', 'Either'], ['free', 'No calculator (Exam 1 style)'], ['cas', 'CAS allowed (Exam 2 style)']].map(([v, l], i) => `<label class="cb"><input type="radio" name="tech" value="${v}" ${i ? '' : 'checked'}> ${l}</label>`).join('')}</fieldset>` : ''}
       <fieldset><legend>How many</legend>${[10, 20, 30].map((n, i) => `<label class="cb"><input type="radio" name="count" value="${n}" ${i ? '' : 'checked'}> ${n}</label>`).join('')}</fieldset>
       <fieldset><legend>Priority</legend><label class="cb"><input type="checkbox" name="weak" checked> Prefer questions I haven't tried or got wrong</label></fieldset>
       <button class="btn primary" type="submit">Start quiz</button> <span class="muted small" data-msg></span></form>`;
@@ -745,6 +774,8 @@
       if (auto(question)) recordResult(question.id, answerScore(question, ans), ans.conf);
       touch(sess); return render(true);
     }
+    // Reveal the worked solution without answering: counts as not yet known, so it goes to the review list.
+    if (act === 'reveal') { ans.checked = true; ans.revealed = true; recordResult(question.id, 0, 'guess'); touch(sess); return render(true); }
     if (act === 'clearq') { sess.answers[question.id] = {}; touch(sess); return render(true); }
     if (act === 'resetsess') { app.querySelector('[data-confirm=resetsess]').classList.remove('hidden'); return; }
     if (act === 'resetsess-no') { app.querySelector('[data-confirm=resetsess]').classList.add('hidden'); return; }
@@ -760,7 +791,7 @@
     }
     if (act === 'savemark') {
       const crit = criteriaOf(question);
-      ans.score = Math.min(question.marks, crit.reduce((a, c, i) => a + ((ans.marks || [])[i] ? c.m : 0), 0));
+      ans.score = question.rubric ? rubricScore(question, ans.levels) : Math.min(question.marks, crit.reduce((a, c, i) => a + ((ans.marks || [])[i] ? c.m : 0), 0));
       ans.scored = true;
       recordResult(question.id, ans.score / question.marks, ans.conf);
       touch(sess); return render(true);
@@ -802,6 +833,11 @@
     const { sess, question, ans } = currentQuestion();
     if (el.dataset.act === 'choose') { ans.choice = +el.value; touch(sess); render(true); }
     if (el.dataset.act === 'paper') { ans.paper = el.checked; touch(sess); render(true); }
+    if (el.dataset.act === 'rubric') {
+      ans.levels = ans.levels || question.rubric.map(() => null);
+      ans.levels[+el.dataset.i] = +el.dataset.l;
+      touch(sess); render(true); return;
+    }
     if (el.dataset.act === 'selfmark') {
       const crit = criteriaOf(question);
       ans.marks = ans.marks || crit.map(() => false);
@@ -847,7 +883,27 @@
   window.addEventListener('hashchange', () => render());
   window.addEventListener('beforeunload', () => Store.save());
 
+  // Saved sessions can point at questions that a later update renamed or removed: drop those so old progress can't break a page.
+  function pruneSessions() {
+    let changed = false;
+    for (const sess of Object.values(Store.state.sessions)) {
+      const s = subj(sess.subject);
+      const keep = s ? sess.qids.map((id) => !!s.questions[id]) : [];
+      if (keep.every(Boolean) && s) continue;
+      changed = true;
+      if (!keep.some(Boolean)) { delete Store.state.sessions[sess.id]; continue; }
+      if (sess.sections) {
+        let start = 0;
+        sess.sections = sess.sections.map((x) => { const count = keep.slice(x.start, x.start + x.count).filter(Boolean).length; const y = Object.assign({}, x, { start, count }); start += count; return y; }).filter((x) => x.count);
+      }
+      sess.qids = sess.qids.filter((id, i) => keep[i]);
+      sess.idx = Math.min(sess.idx || 0, sess.qids.length - 1);
+    }
+    if (changed) Store.save();
+  }
+
   VCE.finalize();
   Store.load();
+  pruneSessions();
   render();
 })();

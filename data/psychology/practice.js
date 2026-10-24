@@ -549,6 +549,12 @@ VCE.questions('psychology', [
     id: 'p-er-01', pool: 'practice', type: 'er', marks: 10, topic: 'sleepwb', kk: ['sl-life', 'sl-reg', 'sw-dep', 'sk-conclude'], stimulus: 'p-er-school',
     stem: '<p>The school principal wants to make the later start time permanent for all year levels, saying: "The trial proves that starting later fixes teenagers\' sleep and mood problems."</p><p>Evaluate the principal\'s proposal. In your response, refer to:</p><ul><li>biological reasons for adolescents\' sleep patterns</li><li>the effects of partial sleep deprivation</li><li>the data and the design of the trial.</li></ul>',
     hint: 'Use the sleep phase delay (melatonin) and the three types of effects (affective, behavioural, cognitive), then critique the design: no control group, one school, one term, "proves".',
+    rubric: [
+      ["Few correct terms (e.g. ‘tired’, ‘body clock’).", "Correctly uses some terms (melatonin, partial sleep deprivation, mood).", "Correctly uses and explains terms such as sleep phase delay, circadian rhythm, affective/behavioural/cognitive effects, control group.", "Precise use throughout, applied to the trial (e.g. delayed melatonin release, recommended 8–10 hours, extraneous variables, generalisability)."],
+      ["Describes adolescent sleep or sleep deprivation without linking to the school start time.", "Explains why adolescents sleep later OR the effects of sleep deprivation.", "Links the sleep phase delay → partial sleep deprivation with an early start → the affective/behavioural/cognitive effects measured.", "Fully connects the biology to each measured outcome and explains why a later start would be expected to help."],
+      ["Repeats that things improved, without data.", "Quotes some data (e.g. sleep 7.0 → 7.9 hours).", "Quotes the data and identifies a design limitation (e.g. no control group).", "Evaluates the data and design in depth (still below recommended sleep; no control; one school, one term; self-report mood) and how this limits the conclusion."],
+      ["Agrees or disagrees without reasons.", "Gives a judgement with a simple reason.", "Gives a justified judgement and challenges ‘proves’/‘fixes’.", "A balanced, evidence-based recommendation (promising, but extend with a controlled trial across year levels before making it permanent)."],
+    ],
     criteria: [
       { m: 1, t: 'Explains adolescent sleep phase delay: melatonin is released later at night, so adolescents feel sleepy later' },
       { m: 1, t: 'Explains adolescents need about 8–10 hours of sleep, so an early start causes partial sleep deprivation' },
@@ -571,6 +577,12 @@ VCE.questions('psychology', [
     id: 'p-er-02', pool: 'practice', type: 'er', marks: 10, topic: 'learning', kk: ['le-beh', 'le-obs', 'ns-nt'], stimulus: 'p-er-phone',
     stem: '<p>Analyse how behaviourist and social-cognitive approaches to learning could each explain Ruby\'s behaviours. Evaluate which approach best explains her posting of dance videos.</p>',
     hint: 'Classical: the ping. Operant: checking and "likes". Observational: the cousin. Dopamine can link to reinforcement. Finish with a judgement.',
+    rubric: [
+      ["Few correct terms (e.g. ‘gets used to’, ‘copies’).", "Correctly uses some terms (classical conditioning, positive reinforcement, observational learning).", "Correctly uses and explains the terms for all three approaches applied to Ruby (NS, UCS, CS, CR; antecedent–behaviour–consequence; attention, retention, reproduction, motivation, reinforcement).", "Precise use throughout, including vicarious reinforcement and dopamine as a neuromodulator, all applied to Ruby."],
+      ["Describes the approaches in general terms only.", "Applies one approach to one of Ruby’s behaviours.", "Applies each approach to the behaviour it explains (ping, checking, posting).", "Connects the approaches, showing how they work together (observational learning starts the posting; operant reinforcement maintains it)."],
+      ["No evaluation of the approaches.", "States a strength or limitation of one approach.", "Evaluates what each approach can and cannot explain about Ruby.", "Weighs the approaches against the evidence in the scenario, explaining why behaviourist approaches don’t explain why she began posting dance videos."],
+      ["States a preferred approach with no reason.", "Gives a judgement with a simple reason.", "Gives a justified judgement about which approach best explains the posting.", "A nuanced, evidence-based conclusion that recognises the contribution of each approach."],
+    ],
     criteria: [
       { m: 1, t: 'Classical conditioning: before, the ping was a NS; it was repeatedly paired with receiving messages/likes (UCS) that produced excitement/pleasure (UCR)' },
       { m: 1, t: 'After conditioning, the ping (CS) alone produces a flutter of excitement (CR), even when she can\'t look (involuntary)' },

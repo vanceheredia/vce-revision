@@ -4,10 +4,14 @@ A static revision site for VCE students: full-length practice exams, topic quizz
 
 | Subject | Status |
 |---|---|
-| Psychology Units 3 & 4 | ✅ 3 full exams (120 marks each), Unit 3 and Unit 4 tests (40 marks each), 72 topic practice questions, revision notes, progress tracking |
-| Mathematical Methods Units 1 & 2 | ✅ 2 practice exam sets (Exam 1 no calculator, 40 marks; Exam 2 CAS, 60 marks), Unit 1 and Unit 2 tests (35 marks each), 106 topic practice questions, revision notes |
-| Specialist Mathematics Units 1 & 2 | ✅ 2 practice exam sets (Exam 1 no calculator, 40 marks; Exam 2 CAS, 60 marks), Unit 1 and Unit 2 tests (35 marks each), 138 topic practice questions, revision notes. Tailored to the school course: no matrices or transformations; extra kinematics, vectors, complex numbers and trig, many set around graphs |
-| Physics Units 1 & 2 | Coming soon |
+| Psychology Units 3 & 4 | ✅ 3 full exams (120 marks each), Unit 3 and Unit 4 tests (40 marks each), a "where students lose marks" test drawn from the 2023–2025 examiners' reports, topic practice, revision notes. Extended responses are marked with VCAA's holistic four-criterion rubric |
+| Mathematical Methods Units 1 & 2 | ✅ 2 practice exam sets (Exam 1 no calculator, 40 marks; Exam 2 CAS, 60 marks), Unit 1 and Unit 2 tests, a "where students lose marks" drill, topic practice, revision notes |
+| Specialist Mathematics Units 1 & 2 | ✅ 2 practice exam sets (Exam 1 no calculator; Exam 2 CAS), Unit 1 and Unit 2 tests, a "where students lose marks" drill, topic practice, revision notes. Tailored to the school course: no matrices or transformations; extra kinematics, vectors, complex numbers and trig, many set around graphs |
+| Physical Education Units 1 & 2 | ✅ Practice exam (80 marks), Unit 1 and Unit 2 tests, topic practice, revision notes (2025 study design) |
+| Year 10 Methods (Level 10 & 10A) | ✅ Practice exam (no-calculator and calculator sections, 75 marks), two topic tests, topic practice, revision notes (Victorian Curriculum 2.0) |
+| Physics Units 1 & 2 | ✅ Unit 1 and Unit 2 practice exams (80 marks each), six topic tests, a test for **each of the 18 Unit 2 options**, topic practice, revision notes |
+
+Every maths and physics question has a step-by-step worked solution (a numbered list), shown after checking or straight away with **🧮 Show me how to solve it**.
 
 ## Run it locally
 
@@ -36,7 +40,7 @@ Only push this folder. The VCAA source documents in the parent folder are VCAA c
 - **Progress page:** scores over time, strength per study-design dot point, top focus areas with one-click practice, and confidence calibration. Each results page also lists the dot points to focus on next.
 - **Reset:** clear a single answer, reset a question after checking it, or reset a whole test (a finished timed test restarts as a new attempt; history and the review list are kept).
 - **Report a problem:** a flag under every question; the list can be copied from Backup & settings.
-- **Maths:** formulas are typeset with KaTeX (loaded from jsDelivr). Numeric answers are typed and marked automatically, with a "read as" preview and targeted feedback for common wrong answers. Working-out questions are done on paper and self-marked against a worked solution. Every question is labelled *No calculator* or *CAS allowed*, and quizzes can be filtered by either.
+- **Maths and physics:** formulas are typeset with KaTeX (loaded from jsDelivr). Numeric answers are typed and marked automatically (including scientific notation such as `3.0 x 10^8`, and answers rounded to the significant figures asked for), with a "read as" preview and targeted feedback for common wrong answers. Working-out questions are done on paper and self-marked against a worked solution. Maths questions are labelled *No calculator* or *CAS allowed*, and quizzes can be filtered by either; physics questions allow a scientific calculator.
 
 When you publish changes, bump the `?v=` number on the script and stylesheet links in `index.html` so browsers fetch the new files.
 

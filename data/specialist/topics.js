@@ -33,6 +33,28 @@
 <li><strong>Argand diagrams</strong>: solid boundary = included ($\le$), dashed = excluded ($\lt$); open circle = point excluded (e.g. the start of a ray).</li>
 <li>When asked to sketch, label intercepts, asymptotes, endpoints and key points with coordinates.</li>
 </ul>
+<h2>How VCAA marks maths</h2>
+<ul>
+<li>Marks are <strong>M</strong> (method: a correct key step, e.g. "sets the derivative to 0 and attempts to solve") or <strong>A</strong> (answer: the correct final result). The marking guides in this app follow the same idea: each tick is a step an assessor looks for.</li>
+<li>"In questions where more than one mark is available, appropriate working must be shown." A bare answer to a 2- or 3-mark question earns at most the A mark, often nothing.</li>
+<li>Equivalent correct forms are accepted, but <strong>contradictory answers can't get full marks</strong>: cross out the attempts you don't want marked.</li>
+<li>If asked for one answer and you give more, only the first is marked. There are no half marks. A later part can still earn marks if it follows correctly from your earlier wrong answer (a consequential error).</li>
+</ul>
+<h2>What the VCAA examiners' reports say (2023–2025)</h2>
+<ul>
+<li><strong>Exact answers</strong> unless a number of decimal places is asked for, and round only at the end (set your CAS float correctly).</li>
+<li><strong>Answer in the form asked:</strong> an "equation" needs a full equation ($y=2x-8$), not just values; "coordinates" need both values in round brackets $(3,-11)$; equations of asymptotes are written as separate equations.</li>
+<li><strong>Use the function names in the question.</strong> If it defines $f$, write $f'(x)$, not $y'$ or $\frac{dy}{dx}$ of something else. Logarithms: $\log_e(x)$ with the base as a subscript.</li>
+<li><strong>Brackets matter:</strong> intervals in the correct order with the correct bracket types (square = included); strictly increasing/decreasing intervals use square brackets at stationary points; close every bracket; vinculums (fraction bars) and radical signs must cover everything they apply to.</li>
+<li><strong>Graphs:</strong> use the grid; show asymptotic behaviour (approaching, never touching); keep symmetry (truncus, cosine); label intercepts, stationary points and endpoints with coordinates; respect the domain (closed or open endpoints); draw dashed asymptotes dark enough to see.</li>
+<li><strong>Derivative graphs</strong> must match the original: zeros of $f'$ at the turning points of $f$, and extreme values of $f'$ where $f$ is steepest.</li>
+<li><strong>"Show that", "verify", "hence":</strong> "show that" needs logical steps ending in the given result; "verify" means substitute and check; "hence" means use the previous part.</li>
+<li><strong>Proof:</strong> a contrapositive swaps the hypothesis and the conclusion <em>and</em> negates both. Show every algebraic step in a direct proof and finish with a concluding statement.</li>
+<li><strong>Objects moving along lines:</strong> give each object its own parameter when finding where <em>paths</em> cross; use the <em>same</em> time $t$ only when testing whether the objects meet.</li>
+<li><strong>Constant acceleration:</strong> choose a positive direction (e.g. up) and keep the signs consistent, so $a=-9.8$ for gravity.</li>
+<li><strong>CAS syntax is not working.</strong> Write the equation or expression you solved in normal mathematical notation; calculator commands don't count.</li>
+<li><strong>Read the question again when finished.</strong> Common slips: giving the $x$-value when the point was asked for; finding the gradient when the tangent equation was asked for; average <em>value</em> instead of average <em>rate of change</em>.</li>
+</ul>
 <h2>Notation that loses marks</h2>
 <ul>
 <li>Vectors need a tilde or arrow when handwritten ($\underset{\sim}{a}$, $\overrightarrow{AB}$).</li>
